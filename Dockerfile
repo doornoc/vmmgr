@@ -18,6 +18,8 @@ COPY --from=build /backend /backend
 RUN apt-get update
 RUN apt-get install -y libvirt-dev ssh
 RUN usermod -u 1000 root && groupmod -g 1000 root
-#EXPOSE 8080
-#USER nonroot:nonroot
+COPY ./config /root/.ssh/config
+COPY ./id_rsa /root/.ssh/id_rsa
+COPY ./id_rsa.pub /root/.ssh/id_rsa.pub
+
 CMD ["/backend", "start", "--config", "config.json"]
