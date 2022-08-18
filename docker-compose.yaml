@@ -1,0 +1,30 @@
+version: '3.8'
+
+services:
+  controller:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    volumes:
+      - ./config.json:/config.json
+    ports:
+      - '8081:8080'
+    network_mode: bridge
+  novnc:
+    container_name: novnc
+    build:
+      context: docker/noVNC
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8082:80"
+  web:
+    container_name: web
+    build:
+      context: docker/web
+      dockerfile: Dockerfile
+    restart: always
+    volumes:
+      - ./ssh:/root/.ssh/
+    ports:
+      - "8083:80"

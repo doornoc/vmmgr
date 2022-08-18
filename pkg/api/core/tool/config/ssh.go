@@ -8,7 +8,7 @@ import (
 	"strings"
 )
 
-func CollectAllConfig() ([]SSHHost, error) {
+func CollectConfig(hostname *string) ([]SSHHost, error) {
 	var sshHosts []SSHHost
 	f, err := os.Open(filepath.Join(os.Getenv("HOME"), ".ssh", "config"))
 	if err != nil {
@@ -21,18 +21,22 @@ func CollectAllConfig() ([]SSHHost, error) {
 	for _, host := range cfg.Hosts {
 		fmt.Println("patterns:", host.Patterns)
 		var sshHost SSHHost
+		if len(host.Nodes) < 2 {
+			continue
+		}
 		for _, node := range host.Nodes {
 			fmt.Println(node.String())
 			nodeStringSplit := strings.Split(strings.TrimSpace(node.String()), " ")
-			if len(nodeStringSplit) < 2 {
-				continue
-			}
+
 			switch nodeStringSplit[0] {
 			case "User":
 				sshHost.User = nodeStringSplit[1]
 			case "HostName":
 				sshHost.HostName = nodeStringSplit[1]
 			}
+		}
+		if hostname != nil && *hostname != sshHost.HostName {
+			continue
 		}
 		sshHosts = append(sshHosts, sshHost)
 	}

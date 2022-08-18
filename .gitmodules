@@ -1,0 +1,3 @@
+[submodule "docker/noVNC/noVNC"]
+	path = docker/noVNC/noVNC
+	url = https://github.com/novnc/noVNC
