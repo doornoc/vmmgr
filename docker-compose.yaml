@@ -24,5 +24,7 @@ services:
       context: docker/web
       dockerfile: Dockerfile
     restart: always
+    volumes:
+      - ./ssh:/root/.ssh/
     ports:
       - "8083:80"
