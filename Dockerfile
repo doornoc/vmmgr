@@ -17,8 +17,5 @@ WORKDIR /
 COPY --from=build /backend /backend
 RUN apt-get update
 RUN apt-get install -y libvirt-dev ssh
-COPY ./config /root/.ssh/config
-COPY ./id_rsa /root/.ssh/id_rsa
-COPY ./id_rsa.pub /root/.ssh/id_rsa.pub
 
 CMD ["/backend", "start", "--config", "config.json"]
