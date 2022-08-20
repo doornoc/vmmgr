@@ -7,6 +7,7 @@ services:
       dockerfile: Dockerfile
     volumes:
       - ./config.json:/config.json
+      - ./ssh:/root/.ssh
     ports:
       - '8081:8080'
     network_mode: bridge
@@ -24,7 +25,5 @@ services:
       context: docker/web
       dockerfile: Dockerfile
     restart: always
-    volumes:
-      - ./ssh:/root/.ssh/
     ports:
       - "8083:80"
