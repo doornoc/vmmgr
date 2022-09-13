@@ -1,7 +1,7 @@
 package v1
 
 import (
-	"github.com/doornoc/vmmgr/pkg/api/core/vm"
+	"github.com/vmmgr/controller/pkg/api/core/vm"
 	"time"
 )
 

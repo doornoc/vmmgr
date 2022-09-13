@@ -1,9 +1,9 @@
 package v1
 
 import (
-	"github.com/doornoc/vmmgr/pkg/api/core/tool/gen"
-	"github.com/doornoc/vmmgr/pkg/api/core/vm"
 	"github.com/gin-gonic/gin"
+	"github.com/vmmgr/controller/pkg/api/core/tool/gen"
+	"github.com/vmmgr/controller/pkg/api/core/vm"
 	"log"
 )
 

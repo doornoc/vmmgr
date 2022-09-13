@@ -1,9 +1,9 @@
 package cmd
 
 import (
-	"github.com/doornoc/vmmgr/pkg/api"
-	"github.com/doornoc/vmmgr/pkg/api/core/tool/config"
 	"github.com/spf13/cobra"
+	"github.com/vmmgr/controller/pkg/api"
+	"github.com/vmmgr/controller/pkg/api/core/tool/config"
 	"log"
 )
 
