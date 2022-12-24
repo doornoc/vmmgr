@@ -46,7 +46,13 @@ func GetWebSocketAdmin(c *gin.Context) {
 			b.getVM(msg.Data["hostname"], msg.Data["uuid"])
 		case vm.MessageTypeGetVMAll:
 			b.getVMAll()
+		case vm.MessageTypeGetTemplate:
+			b.getTemplate(msg.Data["hostname"])
+		case vm.MessageTypeGetHostName:
+			b.getHost()
 		case vm.MessageTypeCreateVM:
+			log.Println(msg)
+			b.createVM(msg.Data["hostname"], msg.VMInput)
 			break
 		case vm.MessageTypeDeleteVM:
 			break

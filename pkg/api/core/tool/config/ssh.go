@@ -33,6 +33,8 @@ func CollectConfig(hostname *string) ([]SSHHost, error) {
 				sshHost.User = nodeStringSplit[1]
 			case "HostName":
 				sshHost.HostName = nodeStringSplit[1]
+			case "IdentityFile":
+				sshHost.KeyPath = nodeStringSplit[1]
 			}
 		}
 		if hostname != nil && *hostname != sshHost.HostName {
