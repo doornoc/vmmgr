@@ -2,7 +2,7 @@ package v1
 
 import (
 	"fmt"
-	"github.com/doornoc/vmmgr/pkg/api/core/tool/config"
+	"github.com/vmmgr/controller/pkg/api/core/tool/config"
 	"libvirt.org/go/libvirt"
 	"log"
 )

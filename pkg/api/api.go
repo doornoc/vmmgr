@@ -1,9 +1,9 @@
 package api
 
 import (
-	"github.com/doornoc/vmmgr/pkg/api/core/tool/config"
-	vm "github.com/doornoc/vmmgr/pkg/api/core/vm/v1"
 	"github.com/gin-gonic/gin"
+	"github.com/vmmgr/controller/pkg/api/core/tool/config"
+	vm "github.com/vmmgr/controller/pkg/api/core/vm/v1"
 	"log"
 	"net/http"
 	"strconv"

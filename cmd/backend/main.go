@@ -1,6 +1,6 @@
 package main
 
-import "github.com/doornoc/vmmgr/pkg/backend/cmd"
+import "github.com/vmmgr/controller/pkg/backend/cmd"
 
 func main() {
 	cmd.Execute()

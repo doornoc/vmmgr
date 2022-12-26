@@ -2,8 +2,8 @@ package v1
 
 import (
 	"encoding/xml"
-	"github.com/doornoc/vmmgr/pkg/api/core/tool/config"
-	"github.com/doornoc/vmmgr/pkg/api/core/vm"
+	"github.com/vmmgr/controller/pkg/api/core/tool/config"
+	"github.com/vmmgr/controller/pkg/api/core/vm"
 	"libvirt.org/go/libvirt"
 	"libvirt.org/go/libvirtxml"
 	"log"
