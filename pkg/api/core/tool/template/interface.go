@@ -1,31 +1,31 @@
 package template
 
 type Template struct {
-	Storage        []Storage `json:"storage"`
-	NIC            []NIC     `json:"nic"`
-	BaseMacAddress string    `json:"base_mac_address"`
+	Storage        []Storage `yaml:"storage"`
+	NIC            []NIC     `yaml:"nic"`
+	BaseMacAddress string    `yaml:"base_mac_address"`
 }
 
 type Storage struct {
-	Name    string        `json:"name"`
-	Comment string        `json:"comment"`
-	Path    string        `json:"path"`
-	Option  StorageOption `json:"option"`
+	Name    string        `yaml:"name"`
+	Comment string        `yaml:"comment"`
+	Path    string        `yaml:"path"`
+	Option  StorageOption `yaml:"option"`
 }
 
 type StorageOption struct {
-	IsIso      bool `json:"is_iso"`
-	IsCloudimg bool `json:"is_cloudimg"`
+	IsIso      bool `yaml:"is_iso"`
+	IsCloudimg bool `yaml:"is_cloudimg"`
 }
 
 type NIC struct {
-	Name      string `json:"name"`
-	Comment   string `json:"comment"`
-	Interface string `json:"interface"`
+	Name      string `yaml:"name"`
+	Comment   string `yaml:"comment"`
+	Interface string `yaml:"interface"`
 }
 
 type ImageList struct {
-	Name     string   `json:"name"`
-	BasePath string   `json:"base_path"`
-	Path     []string `json:"path"`
+	Name     string   `yaml:"name"`
+	BasePath string   `yaml:"base_path"`
+	Path     []string `yaml:"path"`
 }
