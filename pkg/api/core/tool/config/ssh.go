@@ -3,6 +3,7 @@ package config
 import (
 	"fmt"
 	"github.com/kevinburke/ssh_config"
+	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -37,11 +38,25 @@ func CollectConfig(hostname *string) ([]SSHHost, error) {
 				sshHost.KeyPath = nodeStringSplit[1]
 			}
 		}
+
+		// if hostname is nil then continue
 		if hostname != nil && *hostname != sshHost.HostName {
 			continue
 		}
-		sshHosts = append(sshHosts, sshHost)
+
+		log.Println("AcceptHosts", Conf.AcceptHosts)
+		if len(Conf.AcceptHosts) > 0 {
+			for _, acceptHost := range Conf.AcceptHosts {
+				if acceptHost == sshHost.HostName {
+					sshHosts = append(sshHosts, sshHost)
+				}
+			}
+		} else {
+			sshHosts = append(sshHosts, sshHost)
+		}
 	}
+
+	log.Println("sshHosts", sshHosts)
 
 	return sshHosts, nil
 }
