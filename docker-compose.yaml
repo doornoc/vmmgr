@@ -6,7 +6,7 @@ services:
       context: .
       dockerfile: Dockerfile
     volumes:
-      - ./config.json:/config.json
+      - ./config.yaml:/config.yaml
       - ./ssh:/root/.ssh
     ports:
       - '8081:8080'

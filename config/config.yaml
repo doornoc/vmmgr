@@ -1,0 +1,7 @@
+---
+port: 8081
+timezone: Asia/Tokyo
+url: http://127.0.0.1:8081
+accept_hosts:
+  - 10.100.1.180
+  - 10.100.1.181
