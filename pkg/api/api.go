@@ -2,6 +2,7 @@ package api
 
 import (
 	"github.com/gin-gonic/gin"
+	node "github.com/vmmgr/controller/pkg/api/core/controller/v1"
 	"github.com/vmmgr/controller/pkg/api/core/tool/config"
 	vm "github.com/vmmgr/controller/pkg/api/core/vm/v1"
 	"log"
@@ -13,19 +14,27 @@ func RestAPI() error {
 	router := gin.Default()
 	router.Use(cors)
 
+	api := router.Group("/api")
+	{
+		v1 := api.Group("/v1")
+		{
+			v1.POST("/controller", node.ReceiveNode)
+		}
+	}
+
 	ws := router.Group("/ws")
 	{
 		v1 := ws.Group("/v1")
 		{
 			v1.GET("/vm", vm.GetWebSocketAdmin)
 			// noVNC
-			//v1.GET("/vnc/:access_token/:node/:vm_uuid", wsVNC.GetByAdmin)
+			//v1.GET("/vnc/:access_token/:controller/:vm_uuid", wsVNC.GetByAdmin)
 		}
 	}
 
 	go vm.HandleMessages()
 
-	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.Conf.Controller.Port), router))
+	log.Fatal(http.ListenAndServe(":"+strconv.Itoa(config.Conf.Port), router))
 	return nil
 }
 

@@ -169,7 +169,7 @@ func PublicKeyFile(file string) ssh.AuthMethod {
 //		log.Println(err)
 //		return err
 //	}
-//	_, err = capacityExpansion(h.DstPath, h.Input.Capacity)
+//	_, err = CapacityExpansion(h.DstPath, h.Input.Capacity)
 //	if err != nil {
 //		log.Println("Error: disk capacity expansion")
 //		log.Println(err)

@@ -1,24 +1,22 @@
 package config
 
 import (
-	"encoding/json"
+	"gopkg.in/yaml.v3"
 	"io/ioutil"
 	"log"
 )
 
 type Config struct {
-	Controller Controller `json:"controller"`
-}
-
-type Controller struct {
-	Port     int    `json:"port"`
-	TimeZone string `json:"timezone"`
+	Port        int      `yaml:"port"`
+	LocalUrl    string   `yaml:"url"`
+	TimeZone    string   `yaml:"timezone"`
+	AcceptHosts []string `yaml:"accept_hosts"`
 }
 
 var Conf Config
 
 func GetConfig(inputConfPath string) error {
-	configPath := "./data.json"
+	configPath := "./config.yaml"
 	if inputConfPath != "" {
 		configPath = inputConfPath
 	}
@@ -27,7 +25,7 @@ func GetConfig(inputConfPath string) error {
 		return err
 	}
 	var data Config
-	err = json.Unmarshal(file, &data)
+	err = yaml.Unmarshal(file, &data)
 	if err != nil {
 		log.Fatal(err)
 	}

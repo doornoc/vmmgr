@@ -1,9 +1,9 @@
 package template
 
 import (
-	"encoding/json"
 	"github.com/vmmgr/controller/pkg/api/core/tool/config"
 	"github.com/vmmgr/controller/pkg/api/core/tool/remote"
+	"gopkg.in/yaml.v3"
 	"log"
 	"strings"
 )
@@ -15,15 +15,14 @@ func Get(host config.SSHHost) (Template, error) {
 	}
 
 	//cat data.json
-	command := "cat data.json"
+	command := "cat .vmmgr/data.yaml"
 	result, err := sh.SSHClientExecCmd(command)
 	if err != nil {
 		log.Println(err)
 		return tpl, err
 	}
-	log.Println(result)
 
-	err = json.Unmarshal([]byte(result), &tpl)
+	err = yaml.Unmarshal([]byte(result), &tpl)
 	if err != nil {
 		log.Fatal(err)
 	}

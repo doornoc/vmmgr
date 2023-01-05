@@ -7,45 +7,39 @@ type MetaData struct {
 	LocalHostName string `yaml:"local-hostname"`
 }
 
-type UsersData struct {
-	Name              string   `yaml:"name"`
-	Password          string   `yaml:"password"`
-	Groups            string   `yaml:"groups"`
-	Shell             string   `yaml:"shell"`
-	Sudo              []string `yaml:"sudo"`
-	SSHAuthorizedKeys []string `yaml:"ssh-authorized-keys"`
-	SSHPWAuth         bool     `yaml:"ssh_pwauth"`
-	LockPasswd        bool     `yaml:"lock_passwd"`
-}
-
 type UserData struct {
-	//Users     []UserDataUser `yaml:"users"`
-	Password  string `yaml:"password"`
-	ChPasswd  string `yaml:"chpasswd"`
-	SshPwAuth bool   `yaml:"ssh_pwauth"`
+	PackagesUpdate    bool             `json:"packages_update" yaml:"packages_update"`
+	PackagesUpgrade   bool             `json:"packages_upgrade" yaml:"packages_upgrade"`
+	Packages          []string         `json:"packages" yaml:"packages"`
+	User              string           `json:"user" yaml:"user"`
+	Password          string           `json:"password" yaml:"password"`
+	ChPasswd          UserDataChPasswd `json:"ch_passwd" yaml:"chpasswd"`
+	SSHPwAuth         bool             `json:"ssh_pwauth" yaml:"ssh_pwauth"`
+	SSHAuthorizedKeys []string         `json:"ssh_authorized_keys" yaml:"ssh_authorized_keys"`
+	Users             []UsersData      `json:"users" yaml:"users"`
 }
 
-type UserDataUser struct {
-	Name              string   `yaml:"name"`
-	Groups            string   `yaml:"groups"`
-	Shell             string   `yaml:"shell"`
-	Sudo              []string `yaml:"sudo"`
-	SSHAuthorizedKeys []string `yaml:"ssh-authorized-keys"`
-	LockPasswd        bool     `yaml:"lock_passwd"`
+type UserDataChPasswd struct {
+	Expire bool `json:"expire" yaml:"expire"`
 }
 
-type NetworkConfigSubnetType string
+// TODO: keyにdefaultがないと動かない
+// https://cloudinit.readthedocs.io/en/latest/topics/modules.html#users-and-groups
 
-const (
-	NetworkConfigSubnetTypeStatic NetworkConfigSubnetType = "static"
-)
+type UsersData struct {
+	Name     string `json:"name" yaml:"name"`
+	Password string `json:"password" yaml:"passwd"`
+	//Groups            string  `json:"groups" yaml:"groups"`
+	//Shell             string  `json:"shell" yaml:"shell"`
+	Sudo              []string `json:"sudo" yaml:"sudo"`
+	SSHAuthorizedKeys []string `json:"ssh_authorized_keys" yaml:"ssh_authorized_keys"`
+	SSHPWAuth         bool     `json:"ssh_pwauth" yaml:"ssh_pwauth"`
+	LockPasswd        bool     `json:"lock_passwd" yaml:"lock_passwd"`
+}
 
-type NetworkConfigSubnet struct {
-	Type    NetworkConfigSubnetType `yaml:"type"`
-	Address string                  `yaml:"address"`
-	Netmask string                  `yaml:"netmask"`
-	Gateway string                  `yaml:"gateway"`
-	DNS     []string                `yaml:"dns_nameservers"`
+type NetworkCon struct {
+	Version int32           `json:"version" yaml:"version"`
+	Config  []NetworkConfig `json:"config" yaml:"config"`
 }
 
 type NetworkConfigType string
@@ -54,14 +48,23 @@ const (
 	NetworkConfigTypePhysical NetworkConfigType = "physical"
 )
 
-type NetworkCon struct {
-	Version int32           `yaml:"version"`
-	Config  []NetworkConfig `yaml:"config"`
+type NetworkConfig struct {
+	Type       NetworkConfigType     `json:"type" yaml:"type"`
+	Name       string                `json:"name" yaml:"name"`
+	MacAddress string                `json:"mac_address" yaml:"mac_address"`
+	Subnets    []NetworkConfigSubnet `json:"subnets" yaml:"subnets"`
 }
 
-type NetworkConfig struct {
-	Type       NetworkConfigType     `yaml:"type"`
-	Name       string                `yaml:"name"`
-	MacAddress string                `yaml:"mac_address"`
-	Subnets    []NetworkConfigSubnet `yaml:"subnets"`
+type NetworkConfigSubnet struct {
+	Type    NetworkConfigSubnetType `json:"type" yaml:"type"`
+	Address string                  `json:"address" yaml:"address"`
+	Netmask string                  `json:"netmask" yaml:"netmask"`
+	Gateway string                  `json:"gateway" yaml:"gateway"`
+	DNS     []string                `json:"dns" yaml:"dns_nameservers"`
 }
+
+type NetworkConfigSubnetType string
+
+const (
+	NetworkConfigSubnetTypeStatic NetworkConfigSubnetType = "static"
+)

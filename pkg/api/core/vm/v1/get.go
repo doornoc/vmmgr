@@ -11,7 +11,7 @@ import (
 )
 
 func (b *Base) getVM(hostname, uuid string) {
-	log.Println("WebSocket VM Get " + uuid + "(" + hostname + ")")
+	log.Println("WebSocket Store Get " + uuid + "(" + hostname + ")")
 	dom, err := getOneVM(hostname, uuid)
 	if err != nil {
 		b.Error("failed to getting state: " + err.Error())
@@ -38,7 +38,7 @@ func (b *Base) getVM(hostname, uuid string) {
 
 func (b *Base) getVMAll() {
 	// Get All
-	log.Println("WebSocket VM GetAll")
+	log.Println("WebSocket Store GetAll")
 
 	sshHosts, err := config.CollectConfig(nil)
 	if err != nil {

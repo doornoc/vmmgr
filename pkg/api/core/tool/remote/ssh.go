@@ -35,7 +35,7 @@ func (h *Auth) SSHClientExecCmd(command string) (string, error) {
 	var b bytes.Buffer
 	session.Stdout = &b
 	if err = session.Run(command); err != nil {
-		log.Fatal("Failed to run: " + err.Error())
+		log.Println("Failed to run: " + err.Error())
 		return "", err
 	}
 	log.Println(command + ":" + b.String())

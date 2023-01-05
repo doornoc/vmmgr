@@ -1,2 +1,6 @@
 /config.json
 ssh/
+cmd/backend/*.yaml
+cmd/backend/*.json
+
+/.idea
