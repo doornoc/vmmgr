@@ -18,4 +18,4 @@ COPY --from=build /backend /backend
 RUN apt-get update
 RUN apt-get install -y libvirt-dev ssh
 
-CMD ["/backend", "start", "--config", "config.json"]
+CMD ["/backend", "start", "--config", "config.yaml"]
