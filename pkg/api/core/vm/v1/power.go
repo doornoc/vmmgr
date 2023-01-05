@@ -10,7 +10,7 @@ import (
 )
 
 func (b *Base) startVM(hostname, uuid string) {
-	log.Println("WebSocket VM Start " + uuid + "(" + hostname + ")")
+	log.Println("WebSocket Store Start " + uuid + "(" + hostname + ")")
 	dom, err := getOneVM(hostname, uuid)
 	if err != nil {
 		b.Error("failed to getting state: " + err.Error())
@@ -54,7 +54,7 @@ func (b *Base) startVM(hostname, uuid string) {
 }
 
 func (b *Base) shutdownVM(force bool, hostname, uuid string) {
-	log.Println("WebSocket VM Shutdown/Force Shutdown " + uuid + "(" + hostname + ")")
+	log.Println("WebSocket Store Shutdown/Force Shutdown " + uuid + "(" + hostname + ")")
 	dom, err := getOneVM(hostname, uuid)
 	if err != nil {
 		b.Error("failed to getting state: " + err.Error())
@@ -108,7 +108,7 @@ func (b *Base) shutdownVM(force bool, hostname, uuid string) {
 }
 
 func (b *Base) resetVM(hostname, uuid string) {
-	log.Println("WebSocket VM Reset " + uuid + "(" + hostname + ")")
+	log.Println("WebSocket Store Reset " + uuid + "(" + hostname + ")")
 	dom, err := getOneVM(hostname, uuid)
 	if err != nil {
 		b.Error("failed to getting state: " + err.Error())

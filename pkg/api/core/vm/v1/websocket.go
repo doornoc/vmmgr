@@ -51,7 +51,7 @@ func GetWebSocketAdmin(c *gin.Context) {
 		case vm.MessageTypeGetHostName:
 			b.getHost()
 		case vm.MessageTypeCreateVM:
-			log.Println(msg)
+			log.Println("createMessage", msg)
 			b.createVM(msg.Data["hostname"], msg.VMInput)
 			break
 		case vm.MessageTypeDeleteVM:

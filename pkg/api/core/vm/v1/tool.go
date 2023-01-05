@@ -22,7 +22,6 @@ func (b *Base) getTemplate(hostname string) {
 		b.Error(err.Error())
 		return
 	}
-	log.Println(tpl)
 	tplStr, _ := json.Marshal(&tpl)
 
 	// get ISO & cloudimg data

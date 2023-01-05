@@ -1,9 +1,7 @@
 package config
 
 import (
-	"fmt"
 	"github.com/kevinburke/ssh_config"
-	"log"
 	"os"
 	"path/filepath"
 	"strings"
@@ -20,13 +18,11 @@ func CollectConfig(hostname *string) ([]SSHHost, error) {
 		return sshHosts, err
 	}
 	for _, host := range cfg.Hosts {
-		fmt.Println("patterns:", host.Patterns)
 		var sshHost SSHHost
 		if len(host.Nodes) < 2 {
 			continue
 		}
 		for _, node := range host.Nodes {
-			fmt.Println(node.String())
 			nodeStringSplit := strings.Split(strings.TrimSpace(node.String()), " ")
 
 			switch nodeStringSplit[0] {
@@ -44,7 +40,6 @@ func CollectConfig(hostname *string) ([]SSHHost, error) {
 			continue
 		}
 
-		log.Println("AcceptHosts", Conf.AcceptHosts)
 		if len(Conf.AcceptHosts) > 0 {
 			for _, acceptHost := range Conf.AcceptHosts {
 				if acceptHost == sshHost.HostName {
@@ -55,8 +50,6 @@ func CollectConfig(hostname *string) ([]SSHHost, error) {
 			sshHosts = append(sshHosts, sshHost)
 		}
 	}
-
-	log.Println("sshHosts", sshHosts)
 
 	return sshHosts, nil
 }

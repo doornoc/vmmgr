@@ -6,7 +6,7 @@ import (
 	"testing"
 )
 
-var confPath = "/home/yonedayuto/go/src/github.com/vmmgr/controller/cmd/backend/config.json"
+var confPath = "/home/yonedayuto/go/src/github.com/vmmgr/controller/cmd/backend/config.yaml"
 
 func Test0(t *testing.T) {
 	err := config.GetConfig(confPath)

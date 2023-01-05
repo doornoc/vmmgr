@@ -1,4 +1,4 @@
-package v0
+package v1
 
 import (
 	"github.com/vmmgr/controller/pkg/api/core/vm/cloudinit"
@@ -7,13 +7,13 @@ import (
 )
 
 func Test(t *testing.T) {
-	tmpCloudInit := CloudInit{
+	tmpCloudInit := Handler{
 		DirPath:  "",
 		MetaData: cloudinit.MetaData{},
 		UserData: cloudinit.UserData{
 			Password:  "ubuntu",
 			ChPasswd:  "{ expire: False }",
-			SshPwAuth: true,
+			SSHPwAuth: true,
 		},
 		NetworkConfig: cloudinit.NetworkCon{
 			Version: 0,

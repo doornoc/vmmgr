@@ -6,6 +6,7 @@ import (
 	"github.com/google/uuid"
 	"libvirt.org/go/libvirt"
 	"libvirt.org/go/libvirtxml"
+	"log"
 	"sort"
 )
 
@@ -16,7 +17,7 @@ var webSocketPortStart = 5310
 func GenerateUUID() string {
 	u, err := uuid.NewRandom()
 	if err != nil {
-		fmt.Println(err)
+		log.Println(err)
 		//return ""
 	}
 	uu := u.String()

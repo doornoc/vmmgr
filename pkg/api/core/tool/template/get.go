@@ -21,7 +21,6 @@ func Get(host config.SSHHost) (Template, error) {
 		log.Println(err)
 		return tpl, err
 	}
-	log.Println(result)
 
 	err = yaml.Unmarshal([]byte(result), &tpl)
 	if err != nil {

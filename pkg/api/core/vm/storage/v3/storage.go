@@ -3,19 +3,20 @@ package v3
 import (
 	"fmt"
 	"github.com/vmmgr/controller/pkg/api/core/tool/config"
+	"github.com/vmmgr/controller/pkg/api/core/tool/remote"
 	"github.com/vmmgr/controller/pkg/api/core/tool/template"
-	"github.com/vmmgr/controller/pkg/api/core/vm"
+	vmInterface "github.com/vmmgr/controller/pkg/api/core/vm"
 	"github.com/vmmgr/controller/pkg/api/core/vm/storage"
 	"libvirt.org/go/libvirtxml"
 	"log"
-	"strconv"
+	"time"
 )
 
 //type StorageHandler struct {
 //	UUID      string
 //	Conn      *libvirt.Connect
 //	Input     storage.Storage
-//	VM        vm.VirtualMachine
+//	Store        vm.VirtualMachine
 //	Address   *vm.Address
 //	Auth      *storage.Auth
 //	SrcImaCon core.ImaCon
@@ -26,11 +27,12 @@ import (
 //}
 
 type StorageHandler struct {
-	SSHHost  config.SSHHost
-	Template template.Template
-	Address  *vm.Address
-	Xml      *libvirtxml.Domain
-	Chan     *chan vm.WebSocketResult
+	SSHHost     config.SSHHost
+	Template    template.Template
+	Address     *vmInterface.Address
+	Xml         *libvirtxml.Domain
+	Chan        *chan vmInterface.WebSocketResult
+	IsCloudinit bool
 }
 
 func NewStorageHandler(handler StorageHandler) *StorageHandler {
@@ -64,7 +66,7 @@ func NewStorageHandler(handler StorageHandler) *StorageHandler {
 //	return nil
 //}
 
-func (h *StorageHandler) Add(name string, input []vm.VMDisk) error {
+func (h *StorageHandler) Add(name string, input []vmInterface.VMDisk) error {
 	for idx, disk := range input {
 		path := disk.Path
 		extension, err := convertFileTypeToString(disk.FileType)
@@ -79,7 +81,7 @@ func (h *StorageHandler) Add(name string, input []vm.VMDisk) error {
 		//　テンプレートからbaseパスを抽出
 		for _, tpl := range h.Template.Storage {
 			if tpl.Name == path {
-				path = tpl.Path + "/" + name + "_" + strconv.Itoa(idx) + "." + extension
+				path = GenTemplatePath(tpl.Path, name, idx, extension)
 				break
 			}
 		}
@@ -89,11 +91,19 @@ func (h *StorageHandler) Add(name string, input []vm.VMDisk) error {
 			return fmt.Errorf("Error: Not found... ")
 		}
 
-		if FileExistsCheck(path) {
+		isExist, err := h.fileExist(path)
+		// cloudinit=fase時は、fileが存在しないかCheckする
+		if isExist && !h.IsCloudinit {
 			return fmt.Errorf("Error: file already exists... ")
+		} else if !isExist && h.IsCloudinit {
+			// cloudinit=true時は、fileが存在するかCheckする
+			return fmt.Errorf("Error: file is not exists... ")
+		} else if err != nil {
+			return fmt.Errorf("[h.fileExist] %s", err.Error())
 		}
 
-		if 0 == disk.Type || disk.Type >= 10 {
+		// cloudinit=false時は、ここでストレージを作成
+		if (0 == disk.Type || disk.Type >= 10) && !h.IsCloudinit {
 			// イメージの作成
 			out, err := h.generateImage(extension, path, disk.Size)
 			if err != nil {
@@ -103,7 +113,7 @@ func (h *StorageHandler) Add(name string, input []vm.VMDisk) error {
 			log.Println("Done: [" + path + "] Image Create")
 		}
 		input[idx].Path = path
-		//node.SendServer(h.Input.Info, 1, 100, "Done: Image Create", nil)
+		//controller.SendServer(h.Input.Info, 1, 100, "Done: Image Create", nil)
 	}
 	err := h.xmlGenerate(input)
 	if err != nil {
@@ -113,144 +123,65 @@ func (h *StorageHandler) Add(name string, input []vm.VMDisk) error {
 	return nil
 }
 
-//func (h *StorageHandler) Add(c *gin.Context) {
-//	var input storage.Storage
-//
-//	err := c.BindJSON(&input)
-//	if err != nil {
-//		json.ResponseError(c, http.StatusBadRequest, err)
-//		return
-//	}
-//
-//	path := ""
-//
-//	for _, tmpConf := range config.Conf.Storage {
-//		if tmpConf.Type == input.PathType {
-//			if input.VMName == "" {
-//				path = tmpConf.Path + "/" + input.Path
-//			} else {
-//				if err := os.Mkdir(tmpConf.Path+"/"+input.VMName, 0775); err != nil {
-//					log.Println(err)
-//					json.ResponseError(c, http.StatusInternalServerError, err)
-//					return
-//				}
-//				path = tmpConf.Path + "/" + input.VMName + "/" + input.Path
-//			}
-//		}
-//	}
-//
-//	log.Println(path)
-//	// Pathが見つからない場合
-//	if path == "" {
-//		json.ResponseError(c, http.StatusNotFound, fmt.Errorf("Error: Not found... "))
-//		return
-//	}
-//
-//	if FileExistsCheck(path) {
-//		json.ResponseError(c, http.StatusNotFound, fmt.Errorf("Error: file already exists... "))
-//		return
-//	}
-//
-//	var out string
-//
-//	// イメージの作成
-//	if input.Mode == 0 {
-//		out, err = generateImage(storage.GetExtensionName(input.Type), input.Path, input.Capacity)
-//		if err != nil {
-//			json.ResponseError(c, http.StatusNotFound, err)
-//			return
-//		} else {
-//			json.ResponseOK(c, out)
-//		}
-//	} else if input.Mode == 1 {
-//		// ImaConからイメージ取得(時間がかかるので、go funcにて処理)
-//		go func() {
-//			log.Println("From: " + input.FromImaCon.Path)
-//			log.Println("To: " + path)
-//
-//			//メソッドに各種情報の追加
-//			h.Auth = &storage.Auth{
-//				IP: input.FromImaCon.IP, User: config.Conf.ImaCon.User, Pass: config.Conf.ImaCon.Pass,
-//			}
-//			h.SrcPath = input.FromImaCon.Path
-//			h.DstPath = path
-//			h.Input = input
-//
-//			err := h.sftpRemoteToLocal()
-//			log.Println(err)
-//		}()
-//
-//		json.ResponseOK(c, out)
-//	}
-//}
-//
-//func (h *StorageHandler) ConvertImage(c *gin.Context) {
-//	var input storage.Convert
-//
-//	err := c.BindJSON(&input)
-//	if err != nil {
-//		json.ResponseError(c, http.StatusBadRequest, err)
-//		return
-//	}
-//
-//	// sourceファイルの確認
-//	if !FileExistsCheck(input.SrcFile) {
-//		json.ResponseError(c, http.StatusNotFound, fmt.Errorf("Error: file no exists... "))
-//		return
-//	}
-//
-//	// Destinationファイルの確認
-//	if FileExistsCheck(input.DstFile) {
-//		json.ResponseError(c, http.StatusInternalServerError, fmt.Errorf("Error: file already exists... "))
-//		return
-//	}
-//
-//	if err := h.convertImage(input); err != nil {
-//		json.ResponseError(c, http.StatusInternalServerError, err)
-//	} else {
-//		json.ResponseOK(c, nil)
-//	}
-//}
-//
-//func (h *StorageHandler) InfoImage(c *gin.Context) {
-//	var input storage.Convert
-//
-//	err := c.BindJSON(&input)
-//	if err != nil {
-//		json.ResponseError(c, http.StatusBadRequest, err)
-//		return
-//	}
-//
-//	// sourceファイルの確認
-//	if !FileExistsCheck(input.SrcFile) {
-//		json.ResponseError(c, http.StatusNotFound, fmt.Errorf("Error: file no exists... "))
-//		return
-//	}
-//
-//	if data, err := infoImage(input.SrcFile); err != nil {
-//		json.ResponseError(c, http.StatusInternalServerError, err)
-//	} else {
-//		json.ResponseOK(c, data)
-//	}
-//}
-
-func convertStorageVM(disk vm.VMDisk) storage.VMStorage {
-	return storage.VMStorage{
-		Type:     disk.Type,
-		FileType: disk.FileType,
-		Path:     disk.Path,
-		ReadOnly: disk.ReadOnly,
+func (h *StorageHandler) ImageCopy(uuid, srcPath, destPath string) error {
+	sh := remote.Auth{
+		Config: h.SSHHost,
 	}
+	command := fmt.Sprintf(".vmmgr/node copy --controller %s --uuid %s --src %s --dest %s --debug true &", config.Conf.LocalUrl, uuid, srcPath, destPath)
+	log.Println(command)
+	_, err := sh.SSHClientExecCmd(command)
+	if err != nil {
+		log.Println(err)
+		return fmt.Errorf("[SSHClientExecCmd(%s)] %s", command, err.Error())
+	}
+
+	return nil
 }
 
-func convertFileTypeToString(fileType uint) (string, error) {
-	switch fileType {
-	case 0:
-		// qcow2
-		return "qcow2", nil
-	case 1:
-		// raw
-		return "raw", nil
+func (h *StorageHandler) ConvertRawAndSize(srcPath, destPath, srcType string, size uint, notice *vmInterface.WebSocketResult) error {
+	// convert raw
+	if srcType != "" {
+		_, err := h.ConvertImage(storage.Convert{
+			SrcFile: srcPath,
+			SrcType: "qcow2",
+			DstFile: destPath,
+			DstType: srcType,
+		})
+		if err != nil {
+			return fmt.Errorf("[ConvertImage(qcow2=>raw)] %s", err.Error())
+		}
+		vmInterface.ClientBroadcast <- vmInterface.WebSocketResult{
+			Type:      vmInterface.MessageTypeCreateVM,
+			CreatedAt: time.Now(),
+			VMDetail:  notice.VMDetail,
+			Data:      map[string]string{"create_progress": "70", "copy_progress": "100", "message": "expansion size... (require time!!!)"},
+		}
 	}
-	return "", fmt.Errorf("error: file format type")
+	// expansion size
+	_, err := h.CapacityExpansion(destPath, size)
+	if err != nil {
+		return fmt.Errorf("[CapacityExpansion] %s", err.Error())
+	}
+	vmInterface.ClientBroadcast <- vmInterface.WebSocketResult{
+		Type:      vmInterface.MessageTypeCreateVM,
+		CreatedAt: time.Now(),
+		VMDetail:  notice.VMDetail,
+		Data:      map[string]string{"create_progress": "85", "copy_progress": "100", "message": "delete old file..."},
+	}
+
+	// delete old file
+	if srcType != "" {
+		err = h.deleteFile(srcPath)
+		if err != nil {
+			return fmt.Errorf("[deleteFile(srcPath)] %s", err.Error())
+		}
+		vmInterface.ClientBroadcast <- vmInterface.WebSocketResult{
+			Type:      vmInterface.MessageTypeCreateVM,
+			CreatedAt: time.Now(),
+			VMDetail:  notice.VMDetail,
+			Data:      map[string]string{"create_progress": "90", "copy_progress": "100", "message": "finish convert and size..."},
+		}
+	}
+
+	return nil
 }
