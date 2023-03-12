@@ -94,7 +94,7 @@ type WebSocketResult struct {
 type VMDetail struct {
 	VM   libvirtxml.Domain `json:"vm"`
 	Stat uint              `json:"stat"`
-	Node string            `json:"controller"`
+	Node string            `json:"node"`
 }
 
 var WsUpgrade = websocket.Upgrader{
