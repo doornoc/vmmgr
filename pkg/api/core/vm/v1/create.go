@@ -394,7 +394,6 @@ func CreateForCloudInit(uuidStr string) {
 	}
 
 	delete(Store, uuidStr)
-
 	vm.ClientBroadcast <- vm.WebSocketResult{
 		Type:      vm.MessageTypeCreateVM,
 		CreatedAt: time.Now(),

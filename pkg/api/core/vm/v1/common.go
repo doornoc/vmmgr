@@ -7,6 +7,7 @@ import (
 )
 
 func (b *Base) Error(error string) {
+	delete(Store, b.UUID)
 	log.Printf("[%s_%d] %s\n", b.UUID, b.Type, error)
 	vm.ClientBroadcast <- vm.WebSocketResult{
 		UUID:      b.UUID,
@@ -14,5 +15,4 @@ func (b *Base) Error(error string) {
 		Err:       error,
 		CreatedAt: time.Now(),
 	}
-
 }

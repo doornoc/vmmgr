@@ -70,8 +70,8 @@ type VMNIC struct {
 type VMCloudInit struct {
 	ID           string             `json:"id"`
 	ImageCopy    string             `json:"image_copy"` // http: wget, scp: scp, local: local copy
-	Name         string             `yaml:"name"`
-	TemplateType string             `yaml:"template_type"` // default: "" (template convert to raw file)
+	Name         string             `json:"name"`
+	TemplateType string             `json:"template_type"` // default: "" (template convert to raw file)
 	UserData     cloudinit.UserData `json:"userdata"`
 }
 
