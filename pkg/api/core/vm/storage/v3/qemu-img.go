@@ -16,9 +16,9 @@ func (h *StorageHandler) ConvertImage(d storage.Convert) (string, error) {
 
 	//qemu-img convert -t none -T none -O [dest_type] [src_path] [dest_path] -o preallocation=falloc
 	command := fmt.Sprintf("qemu-img convert -p -t none -T none -O %s %s %s -o preallocation=falloc", d.DstType, d.SrcFile, d.DstFile)
+	log.Println("[ConvertImage]", command)
 	result, err := sh.SSHClientExecCmd(command)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 
@@ -32,9 +32,9 @@ func (h *StorageHandler) generateImage(fileType, filePath string, fileSize uint)
 
 	//qemu-img create -f [file_type] [file_path] 100M
 	command := fmt.Sprintf("qemu-img create -f %s %s %dM", fileType, filePath, fileSize)
+	log.Println("[generateImage]", command)
 	result, err := sh.SSHClientExecCmd(command)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 
@@ -48,9 +48,9 @@ func (h *StorageHandler) infoImage(filePath string) (string, error) {
 
 	//qemu-img info [file_path]
 	command := fmt.Sprintf("qemu-img info %s", filePath)
+	log.Println("[infoImage]", command)
 	result, err := sh.SSHClientExecCmd(command)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
 
@@ -62,15 +62,13 @@ func (h *StorageHandler) CapacityExpansion(filePath string, size uint) (string, 
 		Config: h.SSHHost,
 	}
 
-	//qemu-img resize [file_path]
 	command := fmt.Sprintf("qemu-img resize %s %dM", filePath, size)
+	log.Println("[CapacityExpansion]", command)
+	//qemu-img resize [file_path]
 	result, err := sh.SSHClientExecCmd(command)
 	if err != nil {
-		log.Println(err)
 		return "", err
 	}
-
-	log.Println(result)
 
 	return result, nil
 }
